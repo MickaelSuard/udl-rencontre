@@ -33,8 +33,9 @@ function App() {
           '/avatar.glb',
           '/avatar2.glb',
           '/avatar3.glb',
+          '/avatar4.glb',
         ]}
-        videoUrl="/videos/demo.mp4"
+        videoUrl="/video.mp4"
       />
     </div>
   );
