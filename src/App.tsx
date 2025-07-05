@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import Scene from './components/Scene';
+import AuditoriumScene from './components/Auditorium';
 
 function App() {
   const [pseudo, setPseudo] = useState('');
   const [submitted, setSubmitted] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState('/avatar.glb');
+  const [avatarUrl] = useState('/woman.glb');
 
   if (!submitted) {
     return (
@@ -28,15 +28,7 @@ function App() {
 
   return (
     <div className="w-full h-screen">
-      <Scene
-        avatarUrls={[
-          '/avatar.glb',
-          '/avatar2.glb',
-          '/avatar3.glb',
-          '/avatar4.glb',
-        ]}
-        videoUrl="/video.mp4"
-      />
+      <AuditoriumScene avatarUrl={avatarUrl} pseudo={pseudo} />
     </div>
   );
 }
