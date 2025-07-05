@@ -107,53 +107,11 @@ function VideoScreen({ videoUrl }: { videoUrl: string }) {
     >
       <planeGeometry args={[4, 1.8]} />
       <meshBasicMaterial side={THREE.BackSide}>
-        <videoTexture attach="map" args={[video]} toneMapped={false} />
+        <videoTexture attach="map" args={[video]} />
       </meshBasicMaterial>
     </mesh>
   );
 }
-
-
-function VideoPlane() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const textureRef = useRef<THREE.VideoTexture>();
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.play();
-      textureRef.current = new THREE.VideoTexture(videoRef.current);
-      textureRef.current.minFilter = THREE.LinearFilter;
-      textureRef.current.magFilter = THREE.LinearFilter;
-      textureRef.current.format = THREE.RGBAFormat;
-    }
-  }, []);
-
-  useFrame(() => {
-    if (textureRef.current) textureRef.current.needsUpdate = true;
-  });
-
-  return (
-    <>
-      <video
-        ref={videoRef}
-        src="/video.mp4"
-        style={{ display: 'none' }}
-        loop
-        muted
-        playsInline
-      />
-      {textureRef.current && (
-        <mesh position={[0, 1.5, -2]}>
-          <planeGeometry args={[4, 2.25]} />
-          <meshBasicMaterial map={textureRef.current} toneMapped={false} side={THREE.DoubleSide} />
-        </mesh>
-      )}
-    </>
-  );
-}
-
-
-
 
 export default function AuditoriumScene({
     avatarUrl,
