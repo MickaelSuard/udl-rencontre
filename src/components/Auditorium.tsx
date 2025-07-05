@@ -3,6 +3,8 @@ import { Html, OrbitControls, useGLTF } from '@react-three/drei';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
+import { Suspense } from 'react';
+import LoadingOverlay from './Loading';
 
 export function GLBAuditorium({ url }: { url: string }) {
     const { scene } = useGLTF(url);
@@ -43,9 +45,18 @@ function Avatar({
         // Création du mixer
         mixer.current = new THREE.AnimationMixer(clonedScene);
 
-        // Utiliser la première animation du fichier
-        const action = mixer.current.clipAction(animations[0]);
-        action.play();
+        // Cherche l'animation "Sit" ou "assise"
+        const sitClip = animations.find(clip => clip.name.toLowerCase().includes('sit') || clip.name.toLowerCase().includes('assise'));
+
+        if (sitClip) {
+            const action = mixer.current.clipAction(sitClip);
+            action.reset().fadeIn(0.5).play();
+        } else {
+            console.warn('❌ Animation "Sit" ou "assise" introuvable, lecture de la première animation.');
+            // Fallback à la première animation
+            const action = mixer.current.clipAction(animations[0]);
+            action.reset().fadeIn(0.5).play();
+        }
 
         return () => {
             mixer.current?.stopAllAction();
@@ -83,34 +94,34 @@ function Avatar({
 }
 
 function VideoScreen({ videoUrl }: { videoUrl: string }) {
-  // Crée une vidéo HTML dès la première instanciation, configurée pour boucle et auto-play
-  const [video] = useState(() =>
-    Object.assign(document.createElement('video'), {
-      src: videoUrl,
-      crossOrigin: 'Anonymous',
-      loop: true,
-      muted: true,
-      autoplay: true,
-      playsInline: true,
-    })
-  );
+    // Crée une vidéo HTML dès la première instanciation, configurée pour boucle et auto-play
+    const [video] = useState(() =>
+        Object.assign(document.createElement('video'), {
+            src: videoUrl,
+            crossOrigin: 'Anonymous',
+            loop: true,
+            muted: true,
+            autoplay: true,
+            playsInline: true,
+        })
+    );
 
-  useEffect(() => {
-    video.play();
-  }, [video]);
+    useEffect(() => {
+        video.play();
+    }, [video]);
 
 
 
-  return (
-    <mesh
-      position={[0, 1, 3.5]}
-    >
-      <planeGeometry args={[4, 1.8]} />
-      <meshBasicMaterial side={THREE.BackSide}>
-        <videoTexture attach="map" args={[video]} />
-      </meshBasicMaterial>
-    </mesh>
-  );
+    return (
+        <mesh
+            position={[0, 1, 3.5]} scale={[-1, 1, 1]}
+        >
+            <planeGeometry args={[4, 1.8]} />
+            <meshBasicMaterial side={THREE.BackSide}>
+                <videoTexture attach="map" args={[video]} />
+            </meshBasicMaterial>
+        </mesh>
+    );
 }
 
 export default function AuditoriumScene({
@@ -146,22 +157,31 @@ export default function AuditoriumScene({
             <pointLight position={[0, 5, 0]} intensity={1.5} />
             <OrbitControls />
 
-            <GLBAuditorium url="/scene/auditorium.glb" />
+            <Suspense fallback={<LoadingOverlay />}>
+                <GLBAuditorium url="/scene/auditorium.glb" />
 
-            <Avatar avatarUrl={avatarUrl} position={myPosition} label={pseudo} />
+                <Avatar avatarUrl={avatarUrl} position={myPosition} label={pseudo} />
 
-            {otherPositions.map((pos, i) => (
-                <Avatar
-                    key={i}
-                    avatarUrl={randomAvatars[i]}
-                    position={pos}
-                    label={`Invité ${i + 1}`}
-                />
-            ))}
+                {otherPositions.map((pos, i) => (
+                    <Avatar
+                        key={i}
+                        avatarUrl={randomAvatars[i]}
+                        position={pos}
+                        label={`Invité ${i + 1}`}
+                    />
+                ))}
 
-            {/* Grand tableau vidéo */}
-            <VideoScreen videoUrl="video.mp4" />
-             {/* <VideoPlane /> */}
+                <VideoScreen videoUrl="video.mp4" />
+            </Suspense>
         </Canvas>
     );
 }
+
+
+// A venir
+// - Ajout mur pour la TV
+// - mettre le chat
+// - Mettre les personnages selectionnables
+// - Mettre plus d'avatars
+// Changer les noms des avatars
+// Ajouter un compteur avant la vidéo
