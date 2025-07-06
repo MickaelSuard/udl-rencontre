@@ -12,8 +12,9 @@ export function GLBAuditorium({ url }: { url: string }) {
 }
 
 const availableAvatars = [
-    'man2.glb',
+    'manTest.glb',
     'woman.glb',
+    'clea.glb'
 ];
 
 const allAvatarPositions: [number, number, number][] = [
@@ -27,10 +28,12 @@ function Avatar({
     avatarUrl,
     position,
     label,
+    chatMessage,  // nouvelle prop optionnelle
 }: {
     avatarUrl: string;
     position: [number, number, number];
     label?: string;
+    chatMessage?: string;
 }) {
     const { scene, animations } = useGLTF(avatarUrl);
     const clonedScene = useMemo(() => clone(scene), [scene]);
@@ -42,10 +45,8 @@ function Avatar({
             return;
         }
 
-        // Création du mixer
         mixer.current = new THREE.AnimationMixer(clonedScene);
 
-        // Cherche l'animation "Sit" ou "assise"
         const sitClip = animations.find(clip => clip.name.toLowerCase().includes('sit'));
 
         if (sitClip) {
@@ -53,7 +54,6 @@ function Avatar({
             action.reset().fadeIn(0.5).play();
         } else {
             console.warn('❌ Animation "Sit" ou "assise" introuvable, lecture de la première animation.');
-            // Fallback à la première animation
             const action = mixer.current.clipAction(animations[0]);
             action.reset().fadeIn(0.5).play();
         }
@@ -70,6 +70,7 @@ function Avatar({
     return (
         <group position={position} scale={[0.4, 0.4, 0.4]}>
             <primitive object={clonedScene} />
+
             {label && (
                 <Html
                     position={[0, 1.5, 0]}
@@ -82,16 +83,32 @@ function Avatar({
                         textShadow: '0 0 5px black',
                         pointerEvents: 'none',
                         userSelect: 'none',
-                        width: '100px',
                         textAlign: 'center',
+                        width: 'auto',
+                        height: 'auto',
+                        whiteSpace: 'nowrap', // pour éviter retour à la ligne sur le label
                     }}
                 >
                     {label}
                 </Html>
             )}
+
+            {chatMessage && (
+                <Html
+                    position={[0, 2, 0]} // un peu plus haut que le label
+                    center
+                    distanceFactor={5}
+                    className="bg-black bg-opacity-70 text-white px-3 py-1.5 w-52 h-52 overflow-hidden rounded-lg text-base whitespace-normal pointer-events-none select-none max-w-xs break-words"
+                >
+                    {chatMessage}
+                </Html>
+            )}
         </group>
+
+
     );
 }
+
 
 function VideoScreen({ videoUrl }: { videoUrl: string }) {
     // Crée une vidéo HTML dès la première instanciation, configurée pour boucle et auto-play
@@ -131,49 +148,95 @@ export default function AuditoriumScene({
     avatarUrl: string;
     pseudo: string;
 }) {
-    // const [chairs, setChairs] = useState<THREE.Object3D[]>([]);
     const [myIndex] = useState(() => Math.floor(Math.random() * allAvatarPositions.length));
-
     const myPosition = allAvatarPositions[myIndex];
     const otherPositions = allAvatarPositions.filter((_, i) => i !== myIndex);
 
-    // Générer des avatars aléatoires différents pour les autres positions
     const [randomAvatars] = useState(() => {
-        // Exclure l'avatar du joueur de la liste des avatars disponibles
-        const filtered = availableAvatars.filter(url => url !== avatarUrl);
-        const shuffled = [...filtered].sort(() => 0.5 - Math.random());
-
-        // Prendre autant d'avatars que de positions restantes
+        const shuffled = [...availableAvatars].sort(() => 0.5 - Math.random());
         return otherPositions.map((_, i) => shuffled[i % shuffled.length]);
     });
 
+    // --- État chat ---
+    const [inputValue, setInputValue] = useState('');
+    const [chatMessages, setChatMessages] = useState<{ [key: number]: string }>({});
+
+    // Affiche la bulle de chat pendant 5s après envoi
+    const sendMessage = () => {
+        if (!inputValue.trim()) return;
+        setChatMessages(prev => ({ ...prev, [myIndex]: inputValue.trim() }));
+        setInputValue('');
+
+        // Supprimer la bulle après 5 secondes
+        setTimeout(() => {
+            setChatMessages(prev => {
+                const copy = { ...prev };
+                delete copy[myIndex];
+                return copy;
+            });
+        }, 5000);
+    };
+
     return (
-        <Canvas
-            camera={{ position: [0, 2, -4.5], fov: 50 }}
-            style={{ width: '100vw', height: '100vh' }}
-        >
-            <ambientLight intensity={4} />
-            <directionalLight position={[5, 10, 5]} intensity={2} castShadow />
-            <pointLight position={[0, 5, 0]} intensity={1.5} />
-            <OrbitControls />
+        <>
+            <Canvas
+                camera={{ position: [0, 2, -4.5], fov: 50 }}
+                style={{ width: '100vw', height: '100vh' }}
+            >
+                {/* lumières */}
+                <ambientLight intensity={4} />
+                <directionalLight position={[5, 10, 5]} intensity={2} castShadow />
+                <pointLight position={[0, 5, 0]} intensity={1.5} />
 
-            <Suspense fallback={<LoadingOverlay />}>
-                <GLBAuditorium url={import.meta.env.BASE_URL + "/scene/auditorium.glb"} />
+                <OrbitControls />
 
-                <Avatar avatarUrl={avatarUrl} position={myPosition} label={pseudo} />
+                <Suspense fallback={<LoadingOverlay />}>
+                    <GLBAuditorium url={import.meta.env.BASE_URL + "/scene/auditorium.glb"} />
 
-                {otherPositions.map((pos, i) => (
                     <Avatar
-                        key={i}
-                        avatarUrl={randomAvatars[i]}
-                        position={pos}
-                        label={`Invité ${i + 1}`}
+                        avatarUrl={avatarUrl}
+                        position={myPosition}
+                        label={pseudo}
+                        chatMessage={chatMessages[myIndex]}
                     />
-                ))}
 
-                <VideoScreen videoUrl={import.meta.env.BASE_URL + "video.mp4"} />
-            </Suspense>
-        </Canvas>
+                    {otherPositions.map((pos, i) => (
+                        <Avatar
+                            key={i}
+                            avatarUrl={randomAvatars[i]}
+                            position={pos}
+                            label={`Invité ${i + 1}`}
+                            chatMessage={chatMessages[i >= myIndex ? i + 1 : i]} // adapté si on veut ajouter messages autres invités
+                        />
+                    ))}
+
+                    <VideoScreen videoUrl={import.meta.env.BASE_URL + "video.mp4"} />
+                </Suspense>
+            </Canvas>
+
+            {/* Barre de chat */}
+            <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 w-96 flex gap-2 bg-white bg-opacity-70 p-2 rounded-lg">
+                <input
+                    type="text"
+                    placeholder="Écrire un message..."
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') sendMessage();
+                    }}
+                    maxLength={200}
+                    className="flex-grow px-4 py-2 rounded-xl border border-gray-300 text-base outline-none
+               focus:border-blue-600 transition-colors duration-300"
+                />
+                <button
+                    onClick={sendMessage}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl
+               px-5 py-2 ml-2 shadow-md transition-colors duration-300 cursor-pointer"
+                >
+                    Envoyer
+                </button>
+            </div>
+        </>
     );
 }
 

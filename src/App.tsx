@@ -8,6 +8,7 @@ import { useGLTF } from '@react-three/drei';
 const avatars = [
   { name: 'Femme', url: import.meta.env.BASE_URL + 'woman.glb' },
   { name: 'Homme', url: import.meta.env.BASE_URL + 'manTest.glb' },
+  { name: 'BB', url: import.meta.env.BASE_URL + 'clea.glb' },
 ];
 
 function App() {
