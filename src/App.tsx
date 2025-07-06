@@ -6,9 +6,11 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useGLTF } from '@react-three/drei';
 
 const avatars = [
-  { name: 'Femme', url: import.meta.env.BASE_URL + 'woman.glb' },
-  { name: 'Homme', url: import.meta.env.BASE_URL + 'manTest.glb' },
+  { name: 'Femme', url: import.meta.env.BASE_URL + 'Louise.glb' },
+  { name: 'Homme', url: import.meta.env.BASE_URL + 'Stanley.glb' },
   { name: 'BB', url: import.meta.env.BASE_URL + 'clea.glb' },
+  { name: 'Belly', url: import.meta.env.BASE_URL + 'Belly.glb' },
+  { name: 'BB', url: import.meta.env.BASE_URL + 'Lucas.glb' },
 ];
 
 function App() {

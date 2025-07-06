@@ -12,9 +12,11 @@ export function GLBAuditorium({ url }: { url: string }) {
 }
 
 const availableAvatars = [
-    'manTest.glb',
-    'woman.glb',
-    'clea.glb'
+    'Stanley.glb',
+    'Belly.glb',
+    'Louise.glb',
+    'clea.glb',
+    'Lucas.glb',
 ];
 
 const allAvatarPositions: [number, number, number][] = [
@@ -22,6 +24,10 @@ const allAvatarPositions: [number, number, number][] = [
     [-1.5, 0.22, 0.35],
     [0.45, 0.35, -0.45],
     [1.07, 0.22, 0.25],
+    [-1.73, 0.25, 0.34],
+    [1.5, 0.70, -2],
+    [-1.5, 0.68, -1.98],
+    [-1.5, 0.4, -0.66],
 ];
 
 function Avatar({
