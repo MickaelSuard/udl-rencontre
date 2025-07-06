@@ -98,7 +98,7 @@ function Avatar({
                     position={[0, 2, 0]} // un peu plus haut que le label
                     center
                     distanceFactor={5}
-                    className="bg-black bg-opacity-70 text-white px-3 py-1.5 w-52 h-52 overflow-hidden rounded-lg text-base whitespace-normal pointer-events-none select-none max-w-xs break-words"
+                    className="bg-black bg-opacity-70 text-white px-3 py-1.5 w-auto h-auto overflow-hidden rounded-lg text-base whitespace-normal pointer-events-none select-none max-w-xs break-words"
                 >
                     {chatMessage}
                 </Html>
