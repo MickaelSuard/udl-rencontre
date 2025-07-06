@@ -4,10 +4,7 @@ Application web for Fun 🎉
 
 ## Fonctionnalités
 
-- Création et gestion d'événements
-- Gestion des participants
-- Calendrier des rencontres
-- Notifications
+- Rencontre de nouvelle personne à travers l'application
 
 ## Technologies
 
