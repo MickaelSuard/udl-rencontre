@@ -46,7 +46,7 @@ function Avatar({
         mixer.current = new THREE.AnimationMixer(clonedScene);
 
         // Cherche l'animation "Sit" ou "assise"
-        const sitClip = animations.find(clip => clip.name.toLowerCase().includes('sit') || clip.name.toLowerCase().includes('assise'));
+        const sitClip = animations.find(clip => clip.name.toLowerCase().includes('sit'));
 
         if (sitClip) {
             const action = mixer.current.clipAction(sitClip);
@@ -158,7 +158,7 @@ export default function AuditoriumScene({
             <OrbitControls />
 
             <Suspense fallback={<LoadingOverlay />}>
-                <GLBAuditorium url="/scene/auditorium.glb" />
+                <GLBAuditorium url={import.meta.env.BASE_URL + "/scene/auditorium.glb"} />
 
                 <Avatar avatarUrl={avatarUrl} position={myPosition} label={pseudo} />
 
@@ -171,7 +171,7 @@ export default function AuditoriumScene({
                     />
                 ))}
 
-                <VideoScreen videoUrl="video.mp4" />
+                <VideoScreen videoUrl={import.meta.env.BASE_URL + "video.mp4"} />
             </Suspense>
         </Canvas>
     );

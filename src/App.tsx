@@ -6,8 +6,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useGLTF } from '@react-three/drei';
 
 const avatars = [
-  { name: 'Femme', url: '/woman.glb' },
-  { name: 'Homme', url: '/manTest.glb' },
+  { name: 'Femme', url: import.meta.env.BASE_URL + 'woman.glb' },
+  { name: 'Homme', url: import.meta.env.BASE_URL + 'manTest.glb' },
 ];
 
 function App() {
