@@ -158,7 +158,7 @@ function VideoScreen({
             <mesh>
                 <planeGeometry args={[4, 1.8]} />
                 <meshBasicMaterial side={THREE.BackSide} >
-                     <videoTexture attach="map" args={[video]} />
+                    <videoTexture attach="map" args={[video]} />
                 </meshBasicMaterial>
             </mesh>
 
@@ -178,7 +178,7 @@ function getTargetTime() {
     const now = new Date();
     const target = new Date();
 
-    target.setDate(now.getDate()+1); // Demain
+    target.setDate(now.getDate() + 1); // Demain
     target.setHours(11, 0, 0, 0); // 11:00:00
 
     return target.getTime(); // Timestamp en ms
@@ -253,10 +253,19 @@ export default function AuditoriumScene({
         return `${pad(h)}:${pad(m)}:${pad(s)}`;
     };
 
+    const availableLabels = [
+        'Carolit', 'Micaramel', 'Kévingt', 'Natholit', 'Farouesse', 'Bilait',
+        'Dhaoutar', 'Frédrigolo', 'Noah', 'Jade', 'Tom', 'Manon',];
+
+    const [randomLabels] = useState(() => {
+        const shuffled = [...availableLabels].sort(() => 0.5 - Math.random());
+        return otherPositions.map((_, i) => shuffled[i % shuffled.length]);
+    });
+
     return (
         <>
             <Canvas
-                camera={{ position: [0, 5, -5], fov: 50 }}
+                camera={{ position: [0, 6, -5], fov: 50 }}
                 style={{ width: '100vw', height: '100vh' }}
             >
                 {/* lumières */}
@@ -264,7 +273,7 @@ export default function AuditoriumScene({
                 <directionalLight position={[5, 10, 5]} intensity={2} castShadow />
                 <pointLight position={[0, 5, 0]} intensity={1.5} />
 
-                <OrbitControls  enabled={false} />
+                <OrbitControls enabled={false} />
 
                 <Suspense fallback={<LoadingOverlay />}>
                     <GLBAuditorium url={import.meta.env.BASE_URL + "/scene/auditorium.glb"} />
@@ -281,7 +290,7 @@ export default function AuditoriumScene({
                             key={i}
                             avatarUrl={randomAvatars[i]}
                             position={pos}
-                            label={`Invité ${i + 1}`}
+                            label={randomLabels[i]}
                             chatMessage={chatMessages[i >= myIndex ? i + 1 : i]} // adapté si on veut ajouter messages autres invités
                         />
                     ))}
