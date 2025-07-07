@@ -64,7 +64,7 @@ function App() {
         </div>
       )}
 
-      <h1 className="text-2xl font-bold tracking-tight">🎭 Choisissez votre avatar</h1>
+      <h1 className="text-2xl font-bold tracking-tight">Choisissez votre avatar</h1>
 
       <div className="relative w-full max-w-xl aspect-[3/4] bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-700">
         <button

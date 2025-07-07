@@ -181,7 +181,7 @@ function getTargetTime() {
     target.setDate(now.getDate()+1); // Demain
     target.setHours(11, 0, 0, 0); // 11:00:00
 
-    return target.getTime(); 
+    return target.getTime(); // Timestamp en ms
 }
 
 
@@ -287,7 +287,7 @@ export default function AuditoriumScene({
                     ))}
 
                     <VideoScreen
-                        videoUrl={import.meta.env.BASE_URL + "video.mp4"}
+                        videoUrl={import.meta.env.BASE_URL + "fa.mp4"}
                         play={videoPlaying}
                         countdown={timeRemaining} // On passe bien le nombre
                         formattedTime={formatTime(timeRemaining)} // On passe aussi le texte formaté
